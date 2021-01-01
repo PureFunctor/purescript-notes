@@ -83,7 +83,7 @@ type PersonR = ( name :: String , age :: Int , height :: Int , weight :: Int )
 -- | there exists a `Unit` (or any other type for that matter).
 mkPerson ::
   forall given filler
-  . Union given filler PersonR
+  .  Union given filler PersonR
   => Record given
   -> Unit
 mkPerson _ = unit
@@ -112,7 +112,7 @@ type SchoolWork = ( name :: String , age :: Int , level :: Int , position :: Int
 -- | there exists a proxy that contains `nubbed`
 mergeSchoolWork ::
   forall school work merged nubbed
-  . Union school work merged
+  .  Union school work merged
   => Nub merged nubbed
   => RProxy school
   -> RProxy work
@@ -127,7 +127,7 @@ mergeSchoolWork _ _ = RProxy
 -- | there exists a record that contains `r` rows.
 resolve ::
   forall r a
-  . RProxy r
+  .  RProxy r
   -> a
   -> (a -> Record r)
   -> Record r
@@ -149,7 +149,7 @@ info = resolve responsibilities unit \_ -> { name : "Pure" , age : 17 , level : 
 -- | There exists a proxy containing `possible`.
 restrict ::
   forall possible
-  . Lacks "illegal" possible
+  .  Lacks "illegal" possible
   => RProxy possible
 restrict = RProxy
 
@@ -169,7 +169,7 @@ restrictSuccess = resolve restrict unit \_ -> { greeting : "hello, world" }
 -- | There exists a proxy containing `possible`.
 require ::
   forall tail possible
-  . Cons "always" String tail possible
+  .  Cons "always" String tail possible
   => RProxy possible
 require = RProxy
 
@@ -224,7 +224,7 @@ data Ping (spec :: # Type) = Ping
 -- | Causing a compile-time error.
 ping ::
   forall label tail spec
-  . Cons label Unit tail spec
+  .  Cons label Unit tail spec
   => IsSymbol label
   => SProxy label
   -> Ping spec
