@@ -77,12 +77,15 @@ type SomeRecord' = { foo :: Int , bar :: Int }
 -- | Union
 type PersonR = ( name :: String , age :: Int , height :: Int , weight :: Int )
 
-
+-- | For all `given` and `filler` rows.
+-- | The `Union` of `given` and `filler` produces a `PersonR`.
+-- | Given a record containing the `given` row,
+-- | there exists a `Unit` (or any other type for that matter).
 mkPerson ::
-  forall given filler                 -- For all `given` and `filler` rows.
-  . Union given filler PersonR   -- The `Union` of `given` and `filler` produces a `PersonR`.
-  => Record given                 -- Given a record containing the `given` row,
-  -> Unit                         -- there exists a `Unit` (or any other type for that matter).
+  forall given filler
+  . Union given filler PersonR
+  => Record given
+  -> Unit
 mkPerson _ = unit
 
 
@@ -101,22 +104,33 @@ work = RProxy
 type SchoolWork = ( name :: String , age :: Int , level :: Int , position :: Int )
 
 
+-- | For all `school`, `work`, `merged`, and `nubbed` rows.
+-- | The `Union` of `school` and `work` produces `merged`.
+-- | The `Nub` of `merged` produces `nubbed`.
+-- | Given a proxy that contains `school`,
+-- | and a proxy that contains `work`,
+-- | there exists a proxy that contains `nubbed`
 mergeSchoolWork ::
-  forall school work merged nubbed  -- For all `school`, `work`, `merged`, and `nubbed` rows.
-  . Union school work merged   -- The `Union` of `school` and `work` produces `merged`.
-  => Nub merged nubbed          -- The `Nub` of `merged` produces `nubbed`.
-  => RProxy school              -- Given a proxy that contains `school`,
-  -> RProxy work                -- and a proxy that contains `work`,
-  -> RProxy nubbed              -- there exists a proxy that contains `nubbed`
+  forall school work merged nubbed
+  . Union school work merged
+  => Nub merged nubbed
+  => RProxy school
+  -> RProxy work
+  -> RProxy nubbed
 mergeSchoolWork _ _ = RProxy
 
 
+-- | For all `r` rows and any `a`.
+-- | Given a proxy that contains `r`,
+-- | some value `a`,
+-- | and a function that turns `a` into a record containing `r` rows,
+-- | there exists a record that contains `r` rows.
 resolve ::
-  forall r a             -- For all `r` rows and any `a`.
-  . RProxy r        -- Given a proxy that contains `r`,
-  -> a               -- some value `a`,
-  -> (a -> Record r)  -- and a function that turns `a` into a record containing `r` rows,
-  -> Record r        -- there exists a record that contains `r` rows.
+  forall r a
+  . RProxy r
+  -> a
+  -> (a -> Record r)
+  -> Record r
 resolve _ a f = f a
 
 
@@ -129,10 +143,14 @@ info = resolve responsibilities unit \_ -> { name : "Pure" , age : 17 , level : 
 
 
 -- | Lacks
+
+-- | For all `possible` rows.
+-- | `Lacks` restricts `possible` from `illegal`.
+-- | There exists a proxy containing `possible`.
 restrict ::
-  forall possible                   -- For all `possible` rows.
-  . Lacks "illegal" possible   -- `Lacks` restricts `possible` from `illegal`.
-  => RProxy possible            -- There exists a proxy containing `possible`.
+  forall possible
+  . Lacks "illegal" possible
+  => RProxy possible
 restrict = RProxy
 
 
@@ -145,10 +163,14 @@ restrictSuccess = resolve restrict unit \_ -> { greeting : "hello, world" }
 
 
 -- | Cons
+
+-- | For all `tail` and `possible` rows.
+-- | `Cons` appends the `always :: String` pair into `tail`, producing `possible`.
+-- | There exists a proxy containing `possible`.
 require ::
-  forall tail possible                       -- For all `tail` and `possible` rows.
-  . Cons "always" String tail possible  -- `Cons` appends the `always :: String` pair into `tail`, producing `possible`.
-  => RProxy possible                     -- There exists a proxy containing `possible`.
+  forall tail possible
+  . Cons "always" String tail possible
+  => RProxy possible
 require = RProxy
 
 
