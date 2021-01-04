@@ -1,4 +1,4 @@
-module RowsRecords where
+module RowsRecords.RowsRecords where
 
 import Prelude
 
