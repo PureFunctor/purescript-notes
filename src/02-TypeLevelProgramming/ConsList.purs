@@ -6,7 +6,7 @@ import Prim.Boolean (False, True, kind Boolean)
 
 
 -- This module implements a type-level list of types that
--- supports compile-time membership testing.
+-- supports compile-time membership testing and merging.
 
 
 -- The kind for all type-level lists.
@@ -45,6 +45,23 @@ else
 instance memberRec
   :: Member x ys r
   => Member x ( y : ys ) r
+
+
+-- A typeclass for list concatenation
+class Merge ( xs :: List' ) ( ys :: List' ) ( zs :: List' ) | xs ys -> zs
+
+
+-- If the former is empty, just reflect the latter.
+instance mergeNil ::
+  Merge Nil' ys ys
+
+else
+
+-- Recursively merge xs and ys before prepending x
+-- to the result.
+instance mergeRec
+  :: Merge xs ys z
+  => Merge (x : xs) ys ( x : z )
 
 
 -- Different proxy types for working with these kinds.
@@ -87,3 +104,17 @@ cons _ _ = LProxy
 
 common' :: LProxy ( Char : Int : String : Nil' )
 common' = cons ( TProxy :: TProxy Char ) common
+
+
+-- Merging two lists together.
+merge :: forall xs ys zs. Merge xs ys zs => LProxy xs -> LProxy ys -> LProxy zs
+merge _ _ = LProxy
+
+xs :: LProxy ( Int : String : Nil' )
+xs = LProxy
+
+ys :: LProxy ( Char : String : Nil' )
+ys = LProxy
+
+zs :: LProxy ( Int : String : Char : String : Nil' )
+zs = merge xs ys
